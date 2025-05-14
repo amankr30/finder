@@ -2,14 +2,20 @@ const express= require('express');
 
 const app=express();
 
-app.use("/hello",(req,res)=>{
-    console.log('Hello World');
-    res.send('Hello World');
+app.get('/user',(req,res)=>{
+    res.send("get data of user!!");
 })
-app.use("/bye",(req,res)=>{
-    console.log('Bye Darling!!');
-    res.send('Bye Darling!!');
+
+app.post('/user',(req,res)=>{
+    //DB logic
+    res.send("post data of user in the database!!");
+});
+
+app.delete('/user',(req,res)=>{
+    res.send("delete data of user from the database!!");
 })
+
+
 app.use("/",(req,res)=>{
     res.send('Welcome Mr. Aman!');
 })
