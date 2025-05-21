@@ -14,8 +14,10 @@ app.use('/admin',(req,res,next)=>{
     }
 })
 
+
 //order matters - (err,req,res,next)
-app.use('/admin',(err,req,res,next)=>{
+//Always put error handling middleware at the end of all routes
+app.use('/',(err,req,res,next)=>{
     if(err){
         console.log(err.message);
         res.status(500).send("something went wrong, Please contact support team");
