@@ -1,24 +1,49 @@
 const express = require("express");
 
 const app = express();
-const {adminAuth,adminAuthDelete}=require("./middlewares/auth");
+
+//Error handling
+
+app.use('/admin',(req,res,next)=>{
+    try {
+        throw new Error("12g4hj3g2j3h4g");
+        res.send("get data of user1!!");
+        
+    } catch (error) {
+        res.status(500).send("Error in admin route");
+    }
+})
+
+//order matters - (err,req,res,next)
+app.use('/admin',(err,req,res,next)=>{
+    if(err){
+        console.log(err.message);
+        res.status(500).send("something went wrong, Please contact support team");
+    }else{
+        res.send("get data of user1!!");
+    }
+
+})
+
+
+// const {adminAuth,adminAuthDelete}=require("./middlewares/auth");
 
 //Handle middleware for all routes like GET,PUT,POST.... request
-app.use('/admin',adminAuth);
+// app.use('/admin',adminAuth);
 
-app.use("/admin/getAllData", (req, res, next) => {
-  res.send("get data of user1!!");
-});
-;
+// app.use("/admin/getAllData", (req, res, next) => {
+//   res.send("get data of user1!!");
+// });
+// ;
 
 
 // app.use("/admin/getAllData",adminAuth, (req, res, next) => {
 //   res.send("get data of user1!!");
 // });
 
-app.use("/admin/deleteData", adminAuthDelete, (req, res, next) => {
-  res.send("delete data of user2!!");
-});
+// app.use("/admin/deleteData", adminAuthDelete, (req, res, next) => {
+//   res.send("delete data of user2!!");
+// });
 
 
 
