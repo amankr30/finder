@@ -1,9 +1,9 @@
+require("dotenv").config(); // Load environment variables
 const mongoose = require("mongoose");
 
 const connectDB = async () => {
-  await mongoose.connect(
-    "mongodb+srv://amankunalbharti2001:fiQ20QueZeihSN7I@learnnode.7hhay.mongodb.net/finder"
-  );
+  console.log("DB URI:", process.env.MONGODB_URI);
+  await mongoose.connect(process.env.MONGODB_URI);
 };
 
 module.exports = connectDB;

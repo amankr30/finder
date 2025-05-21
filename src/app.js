@@ -8,10 +8,10 @@ const User = require("./models/user");
 app.post("/signup", async (req, res) => {
   //creating a new instance of user
   const userObj = new User({
-    firstName: "Abhay",
-    lastName: "Kumar",
-    email: "abhaykumarkushwaha123@gmail.com",
-    password: "123456789",
+    firstName: "Shreyash",
+    lastName: "Gupta",
+    email: "shreyashgupta000@gmail.com",
+    password: "123",
   });
 
   try {
@@ -31,5 +31,5 @@ connectDB()
     });
   })
   .catch((err) => {
-    console.log("MongoDB not connected");
+    console.log("MongoDB not connected"+err.message);
   });
