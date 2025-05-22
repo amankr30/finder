@@ -6,6 +6,53 @@ app.use(express.json());
 
 const User = require("./models/user");
 
+// getting user data by ID
+app.post("/id", async (req, res) => {
+  try {
+    const user = await User.findById(req.body._id);
+    if (user.length === 0) {
+      return res.status(404).send("User not found");
+    } else {
+      res.send(user);
+    }
+  } catch (err) {
+    console.log(err);
+    res.status(400).send("Error getting user" + err.message);
+  }
+});
+
+// getting user data by email and ID
+
+app.get("/user/:id", async (req, res) => {
+  try {
+    // const user = await User.find({ email: req.body.email });
+    const user = await User.findById(req.params.id);
+    if (user.length === 0) {
+      return res.status(404).send("User not found");
+    } else {
+      res.send(user);
+    }
+  } catch (err) {
+    console.log(err);
+    res.status(400).send("Error getting user" + err.message);
+  }
+});
+
+// feed api - GET /feed - get all the user data
+
+app.get("/feed", async (req, res) => {
+  try {
+    const users = await User.find({});
+    if (users.length === 0) {
+      res.status(404).send("No users found");
+    } else {
+      res.send(users);
+    }
+  } catch (err) {
+    res.status(400).send("Error getting users" + err.message);
+  }
+});
+
 app.post("/signup", async (req, res) => {
   //creating a new instance of user
   const userObj = new User(req.body);
@@ -15,7 +62,7 @@ app.post("/signup", async (req, res) => {
     res.send("user successfully created");
   } catch (err) {
     console.log(err);
-    res.status(400).send("Error creating user");
+    res.status(400).send("Error creating user" + err.message);
   }
 });
 
@@ -27,5 +74,5 @@ connectDB()
     });
   })
   .catch((err) => {
-    console.log("MongoDB not connected"+err.message);
+    console.log("MongoDB not connected" + err.message);
   });
