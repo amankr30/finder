@@ -6,10 +6,37 @@ app.use(express.json());
 
 const User = require("./models/user");
 
+//update user data by ID
+app.patch("/user", async (req, res) => {
+  const userId = req.body.id;
+  const userData = req.body;
+  try {
+    const user = await User.findByIdAndUpdate(userId, userData);
+    res.send("User updated successfully");
+  } catch (err) {
+    res.status(400).send("Error updating user" + err.message);
+  }
+});
+
+// deleting user data by ID
+app.delete("/user", async (req, res) => {
+  try {
+    const user = await User.findByIdAndDelete(req.body.id);
+    if (!user) {
+      res.status(404).send("User not found");
+    } else {
+      res.send("User deleted successfully");
+    }
+  } catch (err) {
+    console.log(err);
+    res.status(400).send("Error getting user" + err.message);
+  }
+});
+
 // getting user data by ID
 app.post("/id", async (req, res) => {
   try {
-    const user = await User.findById(req.body._id);
+    const user = await User.findById(req.body.id);
     if (user.length === 0) {
       return res.status(404).send("User not found");
     } else {
