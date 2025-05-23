@@ -7,11 +7,29 @@ app.use(express.json());
 const User = require("./models/user");
 
 //update user data by ID
-app.patch("/user", async (req, res) => {
-  const userId = req.body.id;
+app.patch("/user/:userId", async (req, res) => {
+  const userId = req.params.userId;
   const userData = req.body;
   try {
-    const user = await User.findByIdAndUpdate(userId, userData, {runValidators:true});
+    const ALLOWED_UPDATES = [
+      "age",
+      "photoURL",
+      "phoneNumber",
+      "skills",
+      "about",
+    ];
+    const isUpdateAllowed = Object.keys(userData).every((key) =>
+      ALLOWED_UPDATES.includes(key)
+    );
+    if (!isUpdateAllowed) {
+      throw new Error("Invalid update fields");
+    }
+    if (userData?.skills.length > 15) {
+      throw new Error("Skills should be less than 15");
+    }
+    const user = await User.findByIdAndUpdate(userId, userData, {
+      runValidators: true,
+    });
     res.send("User updated successfully");
   } catch (err) {
     res.status(400).send("Error updating user" + err.message);
