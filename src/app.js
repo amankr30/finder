@@ -8,8 +8,7 @@ const bcrypt = require("bcrypt");
 
 const User = require("./models/user");
 
-//login
-
+//login api
 app.post("/login", async (req, res) => {
   try {
     const { email, password } = req.body;
@@ -90,7 +89,6 @@ app.post("/id", async (req, res) => {
 });
 
 // getting user data by email and ID
-
 app.get("/user/:id", async (req, res) => {
   try {
     // const user = await User.find({ email: req.body.email });
@@ -107,7 +105,6 @@ app.get("/user/:id", async (req, res) => {
 });
 
 // feed api - GET /feed - get all the user data
-
 app.get("/feed", async (req, res) => {
   try {
     const users = await User.find({});
@@ -121,6 +118,7 @@ app.get("/feed", async (req, res) => {
   }
 });
 
+// signup api
 app.post("/signup", async (req, res) => {
   try {
     //validate user data
