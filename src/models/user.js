@@ -1,4 +1,5 @@
 const mongoose = require("mongoose");
+const validator=require("validator");
 
 const userSchema = new mongoose.Schema({
   firstName: {
@@ -21,9 +22,8 @@ const userSchema = new mongoose.Schema({
     lowercase: true,
     trim: true,
     validate(value) {
-      const emailRegex = /^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/;
-      if (!emailRegex.test(value)) {
-        throw new Error("Invalid email format");
+      if (!validator.isEmail(value)) {
+        throw new Error("Invalid email format"+ value);
       }
     },
   },
