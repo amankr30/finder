@@ -11,7 +11,7 @@ app.patch("/user", async (req, res) => {
   const userId = req.body.id;
   const userData = req.body;
   try {
-    const user = await User.findByIdAndUpdate(userId, userData);
+    const user = await User.findByIdAndUpdate(userId, userData, {runValidators:true});
     res.send("User updated successfully");
   } catch (err) {
     res.status(400).send("Error updating user" + err.message);

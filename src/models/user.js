@@ -1,26 +1,73 @@
 const mongoose = require("mongoose");
 
 const userSchema = new mongoose.Schema({
-    firstName:{
-        type:String
+  firstName: {
+    type: String,
+    required: true,
+    trim: true,
+    maxLength: 30,
+    uppercase: true,
+  },
+  lastName: {
+    type: String,
+    trim: true,
+    maxLength: 30,
+    uppercase: true,
+  },
+  email: {
+    type: String,
+    required: true,
+    unique: true,
+    lowercase: true,
+    trim: true,
+    validate(value) {
+      const emailRegex = /^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/;
+      if (!emailRegex.test(value)) {
+        throw new Error("Invalid email format");
+      }
     },
-    lastName:{
-        type:String
+  },
+  password: {
+    type: String,
+    required: true,
+    minLength: 6,
+  },
+  age: {
+    type: Number,
+    min: 18,
+    trim: true,
+  },
+  gender: {
+    type: String,
+    lowercase: true,
+    trim: true,
+    validate(value) {
+      if (!["male", "female", "other"].includes(value)) {
+        throw new Error("Invalid gender");
+      }
     },
-    email:{
-        type:String
-    },
-    password:{
-        type:String
-    },
-    age:{
-        type:Number
-    },
-    gender:{
-        type:String
-    }
-});
+  },
+  photoURL: {
+    type: String,
+    default:
+      "https://static-00.iconduck.com/assets.00/profile-default-icon-2048x2045-u3j7s5nj.png",
+  },
+  phoneNumber: {
+    type: String,
+    minLength: 10,
+    trim: true,
+  },
+  skills: {
+    type: [String]
+  },
+  about: {
+    type: String,
+    default: "This is a default information about the user",
+    maxLength: 500,
+    trim: true,
+  },
+},{timestamps:true});
 
-const User= mongoose.model("User",userSchema);
+const User = mongoose.model("User", userSchema);
 // moudule.exports=mongoose.model("User",userSchema);
-module.exports=User;
+module.exports = User;
