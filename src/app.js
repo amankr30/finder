@@ -1,5 +1,4 @@
 const express = require("express");
-
 const connectDB = require("./config/database");
 const app = express();
 app.use(express.json());
@@ -7,25 +6,27 @@ const { validateSignupData } = require("./utils/validate");
 const bcrypt = require("bcrypt");
 const cookieParser = require("cookie-parser");
 app.use(cookieParser());
-const jwt = require("jsonwebtoken");
 
 const User = require("./models/user");
+const { userAuth } = require("./middlewares/auth");
 
 //login api
 app.post("/login", async (req, res) => {
   try {
     const { email, password } = req.body;
-    const user = await User.findOne({ email });
+    const user = await User.findOne({email: email});
     if (!user) {
       throw new Error("Invalid credentials");
     }
-    const isPasswordValid = await bcrypt.compare(password, user.password);
+    const isPasswordValid = await user.validatePassword(password);
     if (isPasswordValid) {
       //create a JWT token
-      const token = await jwt.sign({ _id: user._id }, "QAZplm@12345");
+      const token = await user.getJWT();
 
       //Add the token to the cookie and send the response back to the user
-      res.cookie("token", token);
+      res.cookie("token", token, {
+        expires: new Date(Date.now() + 24 * 3600000),
+      });
       res.send("login sucessfully");
     } else {
       throw new Error("Invalid credentials");
@@ -36,21 +37,9 @@ app.post("/login", async (req, res) => {
 });
 
 // get profile api
-app.get("/profile", async (req, res) => {
+app.get("/profile", userAuth, async (req, res) => {
   try {
-    const cookies = req.cookies;
-    const { token } = cookies;
-    if (!token) {
-      throw new Error("No token provided");
-    }
-
-    //validate the token
-    const decodedMessage = jwt.verify(token, "QAZplm@12345");
-    const { _id } = decodedMessage;
-    const user = await User.find({ _id });
-    if (!user) {
-      throw new Error("User not found");
-    }
+    const user = req.user;
     res.send(user);
   } catch (err) {
     res.status(400).send("ERROR : " + err.message);
