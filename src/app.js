@@ -5,6 +5,9 @@ const app = express();
 app.use(express.json());
 const { validateSignupData } = require("./utils/validate");
 const bcrypt = require("bcrypt");
+const cookieParser = require("cookie-parser");
+app.use(cookieParser());
+const jwt = require("jsonwebtoken");
 
 const User = require("./models/user");
 
@@ -16,14 +19,40 @@ app.post("/login", async (req, res) => {
     if (!user) {
       throw new Error("Invalid credentials");
     }
-    const isMatch = await bcrypt.compare(password, user.password);
-    if (!isMatch) {
-      throw new Error("Invalid credentials");
+    const isPasswordValid = await bcrypt.compare(password, user.password);
+    if (isPasswordValid) {
+      //create a JWT token
+      const token = await jwt.sign({ _id: user._id }, "QAZplm@12345");
+
+      //Add the token to the cookie and send the response back to the user
+      res.cookie("token", token);
+      res.send("login sucessfully");
     } else {
-      res.send("Login successful");
+      throw new Error("Invalid credentials");
     }
   } catch (err) {
-    console.log(err);
+    res.status(400).send("ERROR : " + err.message);
+  }
+});
+
+// get profile api
+app.get("/profile", async (req, res) => {
+  try {
+    const cookies = req.cookies;
+    const { token } = cookies;
+    if (!token) {
+      throw new Error("No token provided");
+    }
+
+    //validate the token
+    const decodedMessage = jwt.verify(token, "QAZplm@12345");
+    const { _id } = decodedMessage;
+    const user = await User.find({ _id });
+    if (!user) {
+      throw new Error("User not found");
+    }
+    res.send(user);
+  } catch (err) {
     res.status(400).send("ERROR : " + err.message);
   }
 });
